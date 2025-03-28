@@ -45,10 +45,15 @@ public class PSNUsers {
         users.add(username, pos);
     }
 
-   public void deactivateUser(String username) throws IOException {
+    public void deactivateUser(String username) throws IOException {
     long pos = users.search(username);
     if (pos == -1) {
         throw new IllegalArgumentException("Usuario no encontrado");
+    }
+    
+    psnFile.seek(pos);
+    if (psnFile.readByte() == '*') {
+        throw new IllegalArgumentException("El usuario ya está desactivado");
     }
     
     psnFile.seek(pos);
@@ -87,24 +92,29 @@ public class PSNUsers {
 }
 
     public String playerInfo(String username) throws IOException {
-    // Primero verificar si el usuario existe en la tabla hash (usuarios activos)
-    if (users.search(username) == -1) {
+    long pos = users.search(username);
+    if (pos == -1) {
         throw new IllegalArgumentException("Usuario no encontrado o cuenta desactivada");
     }
+    psnFile.seek(pos);
+    if (psnFile.readByte() == '*') {
+        throw new IllegalArgumentException("Cuenta desactivada");
+    }
+    psnFile.seek(pos); 
     
-    long pos = users.search(username);
     StringBuilder info = new StringBuilder();
     
-    // Leer datos del usuario
-    psnFile.seek(pos);
     String userRecord = psnFile.readLine();
     String[] parts = userRecord.split(",");
+    
+    if (parts.length < 3) {
+        throw new IOException("Registro de usuario corrupto");
+    }
     
     info.append("Usuario: ").append(parts[0]).append("\n");
     info.append("Puntos: ").append(parts[1]).append("\n");
     info.append("Trofeos: ").append(parts[2]).append("\n");
     
-    // Solo mostrar trofeos si tiene alguno
     if (Integer.parseInt(parts[2]) > 0) {
         info.append("\nTrofeos obtenidos:\n");
         psnFile.seek(0);
@@ -124,8 +134,8 @@ public class PSNUsers {
     }
     
     return info.toString();
-}
- 
+} 
+    
     public void close() throws IOException {
         psnFile.close();
     }

@@ -43,7 +43,6 @@ public class PSNGUI extends JFrame {
         JButton addTrophyBtn = new JButton("Agregar Trofeo");
         JButton infoBtn = new JButton("Información Jugador");
         
-        // Área de salida
         outputArea = new JTextArea();
         outputArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(outputArea);
@@ -64,54 +63,7 @@ public class PSNGUI extends JFrame {
         add(inputPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         
-        addUserBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = userField.getText().trim();
-                if (username.isEmpty()) {
-                    showError("Ingrese un nombre de usuario");
-                    return;
-                }
-                
-                try {
-                    psn.addUser(username);
-                    outputArea.append("Usuario '" + username + "' agregado exitosamente.\n");
-                } catch (IOException ex) {
-                    showError("Error al agregar usuario: " + ex.getMessage());
-                } catch (IllegalArgumentException ex) {
-                    if (ex.getMessage().equals("El usuario ya existe")) {
-                        JOptionPane.showMessageDialog(PSNGUI.this, 
-                            "El nombre de usuario '" + username + "' ya está registrado.",
-                            "Usuario existente",
-                            JOptionPane.WARNING_MESSAGE);
-                    } else {
-                        showError(ex.getMessage());
-                    }
-                }
-            }
-        });
-        
-        deactivateBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = userField.getText().trim();
-                if (username.isEmpty()) {
-                    showError("Ingrese un nombre de usuario");
-                    return;
-                }
-                
-                try {
-                    psn.deactivateUser(username);
-                    outputArea.append("Usuario '" + username + "' desactivado exitosamente.\n");
-                } catch (IOException ex) {
-                    showError("Error al desactivar usuario: " + ex.getMessage());
-                } catch (IllegalArgumentException ex) {
-                    showError(ex.getMessage());
-                }
-            }
-        });
-        
-        addUserBtn.addActionListener(new ActionListener() {
+       addUserBtn.addActionListener(new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
         String username = userField.getText().trim();
@@ -137,8 +89,53 @@ public class PSNGUI extends JFrame {
         }
     }
 });
+
+deactivateBtn.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String username = userField.getText().trim();
+        if (username.isEmpty()) {
+            showError("Ingrese un nombre de usuario");
+            return;
+        }
         
-        infoBtn.addActionListener(new ActionListener() {
+        try {
+            psn.deactivateUser(username);
+            outputArea.append("Usuario '" + username + "' desactivado exitosamente.\n");
+        } catch (IOException ex) {
+            showError("Error al desactivar usuario: " + ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            showError(ex.getMessage());
+        }
+    }
+});
+
+addTrophyBtn.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String username = userField.getText().trim();
+        String game = gameField.getText().trim();
+        String trophy = trophyField.getText().trim();
+        
+        if (username.isEmpty() || game.isEmpty() || trophy.isEmpty()) {
+            showError("Complete todos los campos para agregar un trofeo");
+            return;
+        }
+        
+        Trophy type = (Trophy) typeCombo.getSelectedItem();
+        
+        try {
+            psn.addTrophieTo(username, game, trophy, type);
+            outputArea.append("Trofeo '" + trophy + "' agregado a '" + username + "'.\n");
+        } catch (IOException ex) {
+            showError("Error al agregar trofeo: " + ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            showError(ex.getMessage());
+        }
+    }
+});
+
+infoBtn.addActionListener(new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
         String username = userField.getText().trim();
@@ -153,7 +150,6 @@ public class PSNGUI extends JFrame {
             outputArea.append(playerInfo);
             outputArea.append("=== FIN DE INFORMACIÓN ===\n\n");
             
-            // Hacer scroll al final del texto
             outputArea.setCaretPosition(outputArea.getDocument().getLength());
         } catch (IOException ex) {
             showError("Error al obtener información: " + ex.getMessage());
@@ -161,52 +157,7 @@ public class PSNGUI extends JFrame {
             showError(ex.getMessage());
         }
     }
-}); 
-        addTrophyBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = userField.getText().trim();
-                String game = gameField.getText().trim();
-                String trophy = trophyField.getText().trim();
-                
-                if (username.isEmpty() || game.isEmpty() || trophy.isEmpty()) {
-                    showError("Complete todos los campos para agregar un trofeo");
-                    return;
-                }
-                
-                Trophy type = (Trophy) typeCombo.getSelectedItem();
-                
-                try {
-                    psn.addTrophieTo(username, game, trophy, type);
-                    outputArea.append("Trofeo '" + trophy + "' agregado a '" + username + "'.\n");
-                } catch (IOException ex) {
-                    showError("Error al agregar trofeo: " + ex.getMessage());
-                } catch (IllegalArgumentException ex) {
-                    showError(ex.getMessage());
-                }
-            }
-        });
-        
-        infoBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = userField.getText().trim();
-                if (username.isEmpty()) {
-                    showError("Ingrese un nombre de usuario");
-                    return;
-                }
-                
-                try {
-                    outputArea.append("\n=== INFORMACIÓN DE " + username.toUpperCase() + " ===\n");
-                    psn.playerInfo(username);
-                    outputArea.append("=== FIN DE INFORMACIÓN ===\n\n");
-                } catch (IOException ex) {
-                    showError("Error al obtener información: " + ex.getMessage());
-                } catch (IllegalArgumentException ex) {
-                    showError(ex.getMessage());
-                }
-            }
-        });
+});
     }
     
     private void showError(String message) {
