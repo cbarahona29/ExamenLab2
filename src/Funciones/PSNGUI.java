@@ -90,7 +90,7 @@ public class PSNGUI extends JFrame {
     }
 });
 
-deactivateBtn.addActionListener(new ActionListener() {
+    deactivateBtn.addActionListener(new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
         String username = userField.getText().trim();
@@ -110,7 +110,7 @@ deactivateBtn.addActionListener(new ActionListener() {
     }
 });
 
-addTrophyBtn.addActionListener(new ActionListener() {
+    addTrophyBtn.addActionListener(new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
         String username = userField.getText().trim();
@@ -135,7 +135,7 @@ addTrophyBtn.addActionListener(new ActionListener() {
     }
 });
 
-infoBtn.addActionListener(new ActionListener() {
+    infoBtn.addActionListener(new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
         String username = userField.getText().trim();

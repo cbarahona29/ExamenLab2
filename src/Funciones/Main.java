@@ -17,8 +17,6 @@ public class Main {
             
             System.out.println("\n2. Agregando trofeos...");
             psn.addTrophieTo("player1", "God of War", "Matar a Thor", Trophy.PLATINO);
-            psn.addTrophieTo("player1", "Spider-Man", "100% Compleción", Trophy.ORO);
-            psn.addTrophieTo("player2", "FIFA ", "Ganar la Champions", Trophy.PLATA);
             System.out.println("Trofeos agregados correctamente.");
             
             System.out.println("\n3. Informacion de jugador:");
